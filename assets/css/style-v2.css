@@ -1004,8 +1004,9 @@ header{
 .factory-grid{
 
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(420px,1fr));
+    grid-template-columns:repeat(2, 1fr);
     gap:40px;
+    align-items:stretch;
 
 }
 
@@ -1013,8 +1014,8 @@ header{
 
     background:#fff;
     border-radius:20px;
-    width: 80%;
-    height: 100%;
+    width:100%;
+    height:100%;
     overflow:hidden;
     box-shadow:var(--shadow);
     transition:var(--transition);
@@ -1031,8 +1032,9 @@ header{
 
     width:100%;
     height:300px;
-    object-fit:fill;
+    object-fit:cover;
     display:block;
+    background:#000;
 
 }
 
@@ -1047,6 +1049,34 @@ header{
     padding:0 25px 25px;
     color:var(--gray);
     line-height:1.8;
+
+}
+
+
+/*=========================================
+            FACTORY MOBILE
+=========================================*/
+
+@media(max-width:768px){
+
+    .factory-grid{
+
+        grid-template-columns:1fr;
+        gap:30px;
+
+    }
+
+    .factory-card{
+
+        width:100%;
+
+    }
+
+    .factory-card video{
+
+        height:250px;
+
+    }
 
 }
 
