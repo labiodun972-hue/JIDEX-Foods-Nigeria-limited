@@ -1730,3 +1730,206 @@ header{
     }
 
 }
+
+
+/*=========================================
+        PERSONAL CONTACT PAGE
+=========================================*/
+
+.personal-contact{
+
+    min-height:100vh;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:40px 20px;
+
+    background:var(--light);
+
+}
+
+
+.contact-box{
+
+    width:100%;
+    max-width:650px;
+
+    background:#fff;
+
+    padding:50px;
+
+    border-radius:25px;
+
+    box-shadow:var(--shadow);
+
+    text-align:center;
+
+}
+
+
+.contact-tag{
+
+    display:inline-block;
+
+    margin-bottom:15px;
+
+    font-size:13px;
+    font-weight:700;
+
+    letter-spacing:2px;
+
+    color:var(--primary);
+
+}
+
+
+.contact-box h1{
+
+    margin-bottom:15px;
+
+}
+
+
+.contact-box > p{
+
+    color:var(--gray);
+
+    line-height:1.7;
+
+    margin-bottom:35px;
+
+}
+
+
+.contact-options{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+}
+
+
+.contact-option{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+    padding:22px;
+
+    border-radius:18px;
+
+    background:var(--light);
+
+    text-align:left;
+
+    text-decoration:none;
+
+    color:inherit;
+
+    transition:var(--transition);
+
+}
+
+
+.contact-option:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:var(--shadow);
+
+}
+
+
+.contact-icon{
+
+    width:55px;
+    height:55px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:#fff;
+
+    font-size:25px;
+
+    flex-shrink:0;
+
+}
+
+
+.contact-option h2{
+
+    margin:0 0 5px;
+
+    font-size:20px;
+
+}
+
+
+.contact-option p{
+
+    margin:0;
+
+    color:var(--gray);
+
+    line-height:1.5;
+
+}
+
+
+.back-home{
+
+    display:inline-block;
+
+    margin-top:30px;
+
+    text-decoration:none;
+
+    font-weight:600;
+
+    color:var(--primary);
+
+}
+
+
+.back-home:hover{
+
+    text-decoration:underline;
+
+}
+
+
+/*=========================================
+        MOBILE CONTACT PAGE
+=========================================*/
+
+@media(max-width:600px){
+
+    .contact-box{
+
+        padding:35px 20px;
+
+    }
+
+    .contact-option{
+
+        padding:18px;
+
+    }
+
+}
+
+
+
