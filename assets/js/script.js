@@ -93,6 +93,38 @@ window.addEventListener("scroll", function () {
 
         navbar.classList.add("scrolled");
 
+
+            /* =========================================
+   SAFETY REVEAL SYSTEM
+========================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const revealElements = document.querySelectorAll(".reveal");
+
+    function revealOnScroll() {
+
+        revealElements.forEach(function (element) {
+
+            const elementTop = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+
+            if (elementTop < windowHeight - 80) {
+                element.classList.add("active");
+            }
+
+        });
+
+    }
+
+    // Run immediately
+    revealOnScroll();
+
+    // Run when scrolling
+    window.addEventListener("scroll", revealOnScroll);
+
+});
+
     } else {
 
         navbar.classList.remove("scrolled");
