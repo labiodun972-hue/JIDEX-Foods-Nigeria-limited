@@ -296,77 +296,414 @@ window.addEventListener("scroll", function(){
 });
 
 
-
 // ==========================================
 // JIDEX FOODS GLOBAL SUPABASE REVIEW SYSTEM
 // ==========================================
 
-// 1. FUNCTION TO SAVE A NEW REVIEW TO SUPABASE
-const formElement = document.getElementById('jidexReviewForm');
+
+// ==========================================
+// 1. REVIEW FORM
+// ==========================================
+
+const formElement = document.getElementById("jidexReviewForm");
 
 if (formElement) {
-    formElement.addEventListener('submit', async (e) => {
+
+    formElement.addEventListener("submit", async function (e) {
+
         e.preventDefault();
 
-        // Get live data typed into the form inputs
-        const uName = document.getElementById('reviewerName').value;
-        const uRating = parseInt(document.getElementById('reviewerRating').value);
-        const uComment = document.getElementById('reviewerComment').value;
+        // Make sure Supabase is available
+        if (!supabaseClient) {
 
-        // Push data straight to your Supabase table cloud storage
-        const { data, error } = await supabaseClient
-            .from('reviews')
-            .insert([{ name: uName, rating: uRating, comment: uComment }]);
+            alert(
+                "The review system is temporarily unavailable. Please try again later."
+            );
 
-        if (error) {
-            alert("Error sending review: " + error.message);
-        } else {
-            alert("Thank you! Your review has been shared globally.");
-            formElement.reset(); // clear input fields
-            loadLiveReviews();   // refresh feed list automatically
+            console.error("Supabase client is not available.");
+
+            return;
         }
+
+
+        // Get form values
+        const uName =
+            document.getElementById("reviewerName").value.trim();
+
+        const uRating =
+            parseInt(
+                document.getElementById("reviewerRating").value
+            );
+
+        const uComment =
+            document.getElementById("reviewerComment").value.trim();
+
+
+        // Basic validation
+        if (!uName || !uComment || !uRating) {
+
+            alert("Please complete all review fields.");
+
+            return;
+        }
+
+
+        // Disable submit button while sending
+        const submitButton =
+            formElement.querySelector("button[type='submit']");
+
+        if (submitButton) {
+
+            submitButton.disabled = true;
+
+            submitButton.innerText = "Submitting...";
+        }
+
+
+        try {
+
+            // Send review to Supabase
+            const { data, error } = await supabaseClient
+                .from("reviews")
+                .insert([
+                    {
+                        name: uName,
+                        rating: uRating,
+                        comment: uComment
+                    }
+                ]);
+
+
+            // Handle database error
+            if (error) {
+
+                console.error(
+                    "Supabase review submission error:",
+                    error
+                );
+
+                alert(
+                    "Unable to submit your review. Please try again."
+                );
+
+                return;
+            }
+
+
+            // Success
+            alert(
+                "Thank you! Your review has been shared."
+            );
+
+
+            // Clear form
+            formElement.reset();
+
+
+            // Refresh reviews
+            loadLiveReviews();
+
+
+        } catch (error) {
+
+            console.error(
+                "Unexpected review submission error:",
+                error
+            );
+
+            alert(
+                "Something went wrong while submitting your review. Please try again."
+            );
+
+        } finally {
+
+            // Restore button
+            if (submitButton) {
+
+                submitButton.disabled = false;
+
+                submitButton.innerText = "Submit Review";
+
+            }
+
+        }
+
     });
+
 }
 
-// 2. FUNCTION TO FETCH AND RENDER REVIEWS FOR EVERY VISITOR
+
+
+// ==========================================
+// 2. LOAD REVIEWS FROM SUPABASE
+// ==========================================
+
 async function loadLiveReviews() {
-    const feedContainer = document.getElementById('reviewsDisplayContainer');
-    if (!feedContainer) return;
 
-    // Get all reviews saved inside your database table ordered by newest first
-    const { data: databaseRows, error } = await supabaseClient
-        .from('reviews')
-        .select('*')
-        .order('created_at', { ascending: false });
+    const feedContainer =
+        document.getElementById("reviewsDisplayContainer");
 
-    if (error) {
-        feedContainer.innerHTML = `<p style="color: red; text-align: center;">Could not load reviews: ${error.message}</p>`;
+
+    // If the review display does not exist
+    // on this page, stop here.
+    if (!feedContainer) {
+
         return;
     }
 
-    // If database is completely empty
-    if (!databaseRows || databaseRows.length === 0) {
-        feedContainer.innerHTML = '<p style="text-align: center; color: #777;">No reviews yet. Be the first to leave one!</p>';
-        return;
-    }
 
-    // Wipe old HTML clean and generate dynamic structural cards
-    feedContainer.innerHTML = '';
-    databaseRows.forEach(item => {
-        // Build star string indicator icon templates dynamically
-        const starsStr = '⭐'.repeat(item.rating);
-        
-        feedContainer.innerHTML += `
-            <div style="background: #fdfdfd; padding: 20px; border-left: 5px solid #e67e22; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <strong style="color: #333; font-size: 16px;">${item.name}</strong>
-                    <span style="font-size: 14px;">${starsStr}</span>
-                </div>
-                <p style="margin: 0; color: #555; line-height: 1.5; font-size: 15px;">${item.comment}</p>
-            </div>
+    // Check Supabase connection
+    if (!supabaseClient) {
+
+        feedContainer.innerHTML = `
+            <p style="
+                text-align:center;
+                color:#777;
+                padding:20px;
+            ">
+                Reviews are temporarily unavailable.
+            </p>
         `;
-    });
+
+        console.error(
+            "Supabase client is not available."
+        );
+
+        return;
+    }
+
+
+    // Show loading message
+    feedContainer.innerHTML = `
+        <p style="
+            text-align:center;
+            color:#777;
+            padding:20px;
+        ">
+            Loading reviews...
+        </p>
+    `;
+
+
+    try {
+
+        // Get reviews from database
+        const {
+            data: databaseRows,
+            error
+        } = await supabaseClient
+
+            .from("reviews")
+
+            .select("*")
+
+            .order("created_at", {
+                ascending: false
+            });
+
+
+        // Database error
+        if (error) {
+
+            console.error(
+                "Supabase review loading error:",
+                error
+            );
+
+            feedContainer.innerHTML = `
+                <p style="
+                    text-align:center;
+                    color:#777;
+                    padding:20px;
+                ">
+                    Reviews are temporarily unavailable.
+                </p>
+            `;
+
+            return;
+        }
+
+
+        // No reviews
+        if (
+            !databaseRows ||
+            databaseRows.length === 0
+        ) {
+
+            feedContainer.innerHTML = `
+                <p style="
+                    text-align:center;
+                    color:#777;
+                    padding:20px;
+                ">
+                    No reviews yet.
+                    Be the first to leave one!
+                </p>
+            `;
+
+            return;
+        }
+
+
+        // Clear loading message
+        feedContainer.innerHTML = "";
+
+
+        // Create review cards
+        databaseRows.forEach(function (item) {
+
+            // Make sure rating is between 1 and 5
+            const rating = Math.min(
+                5,
+                Math.max(
+                    1,
+                    parseInt(item.rating) || 1
+                )
+            );
+
+
+            // Generate stars
+            const starsStr =
+                "⭐".repeat(rating);
+
+
+            // Create review card
+            const reviewCard =
+                document.createElement("div");
+
+
+            reviewCard.style.cssText = `
+                background: #fdfdfd;
+                padding: 20px;
+                border-left: 5px solid #e67e22;
+                border-radius: 4px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            `;
+
+
+            // Create top section
+            const reviewHeader =
+                document.createElement("div");
+
+
+            reviewHeader.style.cssText = `
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 15px;
+                margin-bottom: 8px;
+                flex-wrap: wrap;
+            `;
+
+
+            // Customer name
+            const nameElement =
+                document.createElement("strong");
+
+
+            nameElement.style.cssText = `
+                color: #333;
+                font-size: 16px;
+            `;
+
+
+            nameElement.textContent =
+                item.name || "Anonymous";
+
+
+            // Stars
+            const starsElement =
+                document.createElement("span");
+
+
+            starsElement.style.cssText = `
+                font-size: 14px;
+            `;
+
+
+            starsElement.textContent =
+                starsStr;
+
+
+            // Add name and stars
+            reviewHeader.appendChild(
+                nameElement
+            );
+
+            reviewHeader.appendChild(
+                starsElement
+            );
+
+
+            // Review comment
+            const commentElement =
+                document.createElement("p");
+
+
+            commentElement.style.cssText = `
+                margin: 0;
+                color: #555;
+                line-height: 1.5;
+                font-size: 15px;
+                word-wrap: break-word;
+            `;
+
+
+            commentElement.textContent =
+                item.comment || "";
+
+
+            // Build card
+            reviewCard.appendChild(
+                reviewHeader
+            );
+
+            reviewCard.appendChild(
+                commentElement
+            );
+
+
+            // Add card to page
+            feedContainer.appendChild(
+                reviewCard
+            );
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Unexpected error loading reviews:",
+            error
+        );
+
+
+        feedContainer.innerHTML = `
+            <p style="
+                text-align:center;
+                color:#777;
+                padding:20px;
+            ">
+                Unable to load reviews at the moment.
+            </p>
+        `;
+
+    }
+
 }
 
-// Automatically load the global user feed right when the page finishes loading
-window.addEventListener('DOMContentLoaded', loadLiveReviews);
+
+
+// ==========================================
+// 3. LOAD REVIEWS WHEN PAGE OPENS
+// ==========================================
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        loadLiveReviews();
+
+    }
+);
