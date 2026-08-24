@@ -1,6 +1,6 @@
 // Paste your project keys inside the single quotes below
-const SUPABASE_URL = '';
-const SUPABASE_KEY = '';
+const SUPABASE_URL = 'https://jrmabbeurnsmxshmcooh.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_BWINBzBQFqnGcOT2ghVeqA_B46ZfIrL';
 
 // This initializes the database client engine connection
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
