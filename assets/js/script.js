@@ -1,3 +1,14 @@
+// Paste your project keys inside the single quotes below
+const SUPABASE_URL = '';
+const SUPABASE_KEY = '';
+
+// This initializes the database client engine connection
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+
+
+
 /*=========================================
         PREVENT SCROLL RESTORATION
 =========================================*/
