@@ -1931,5 +1931,20 @@ header{
 
 }
 
+/* TEMPORARY VISIBILITY TEST */
+
+.about,
+.founder,
+.journey,
+.products,
+.factory,
+.action,
+.gallery,
+.contact,
+.footer {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+}
 
 
