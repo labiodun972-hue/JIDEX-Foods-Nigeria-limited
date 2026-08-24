@@ -63,22 +63,6 @@ window.addEventListener("load", function () {
 
     window.scrollTo(0, 0);
 
-    /*=========================================
-            PRELOADER
-    =========================================*/
-
-    const preloader = document.getElementById("preloader");
-
-    preloader.style.transition = "opacity 0.6s ease";
-    preloader.style.opacity = "0";
-
-    setTimeout(function () {
-
-        preloader.style.display = "none";
-
-    }, 600);
-
-});
 
 
 /*=========================================
