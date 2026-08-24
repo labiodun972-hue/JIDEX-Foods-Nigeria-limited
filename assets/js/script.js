@@ -268,3 +268,79 @@ window.addEventListener("scroll", function(){
     document.getElementById("progress-bar").style.width = scrolled + "%";
 
 });
+
+
+
+// ==========================================
+// JIDEX FOODS GLOBAL SUPABASE REVIEW SYSTEM
+// ==========================================
+
+// 1. FUNCTION TO SAVE A NEW REVIEW TO SUPABASE
+const formElement = document.getElementById('jidexReviewForm');
+
+if (formElement) {
+    formElement.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Get live data typed into the form inputs
+        const uName = document.getElementById('reviewerName').value;
+        const uRating = parseInt(document.getElementById('reviewerRating').value);
+        const uComment = document.getElementById('reviewerComment').value;
+
+        // Push data straight to your Supabase table cloud storage
+        const { data, error } = await supabaseClient
+            .from('reviews')
+            .insert([{ name: uName, rating: uRating, comment: uComment }]);
+
+        if (error) {
+            alert("Error sending review: " + error.message);
+        } else {
+            alert("Thank you! Your review has been shared globally.");
+            formElement.reset(); // clear input fields
+            loadLiveReviews();   // refresh feed list automatically
+        }
+    });
+}
+
+// 2. FUNCTION TO FETCH AND RENDER REVIEWS FOR EVERY VISITOR
+async function loadLiveReviews() {
+    const feedContainer = document.getElementById('reviewsDisplayContainer');
+    if (!feedContainer) return;
+
+    // Get all reviews saved inside your database table ordered by newest first
+    const { data: databaseRows, error } = await supabaseClient
+        .from('reviews')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        feedContainer.innerHTML = `<p style="color: red; text-align: center;">Could not load reviews: ${error.message}</p>`;
+        return;
+    }
+
+    // If database is completely empty
+    if (!databaseRows || databaseRows.length === 0) {
+        feedContainer.innerHTML = '<p style="text-align: center; color: #777;">No reviews yet. Be the first to leave one!</p>';
+        return;
+    }
+
+    // Wipe old HTML clean and generate dynamic structural cards
+    feedContainer.innerHTML = '';
+    databaseRows.forEach(item => {
+        // Build star string indicator icon templates dynamically
+        const starsStr = '⭐'.repeat(item.rating);
+        
+        feedContainer.innerHTML += `
+            <div style="background: #fdfdfd; padding: 20px; border-left: 5px solid #e67e22; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <strong style="color: #333; font-size: 16px;">${item.name}</strong>
+                    <span style="font-size: 14px;">${starsStr}</span>
+                </div>
+                <p style="margin: 0; color: #555; line-height: 1.5; font-size: 15px;">${item.comment}</p>
+            </div>
+        `;
+    });
+}
+
+// Automatically load the global user feed right when the page finishes loading
+window.addEventListener('DOMContentLoaded', loadLiveReviews);
