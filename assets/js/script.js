@@ -1,4 +1,9 @@
 /*=========================================
+        JIDEX FOODS - MAIN JAVASCRIPT
+=========================================*/
+
+
+/*=========================================
         SUPABASE CONNECTION
 =========================================*/
 
@@ -10,12 +15,19 @@ const SUPABASE_KEY =
 
 let supabaseClient = null;
 
+
+/*=========================================
+        INITIALIZE SUPABASE
+=========================================*/
+
 if (typeof supabase !== "undefined") {
 
     supabaseClient = supabase.createClient(
         SUPABASE_URL,
         SUPABASE_KEY
     );
+
+    console.log("Supabase connected successfully.");
 
 } else {
 
@@ -38,203 +50,271 @@ if ("scrollRestoration" in history) {
 
 
 /*=========================================
-        DOM READY
+        PRELOADER
 =========================================*/
 
-document.addEventListener("DOMContentLoaded", function () {
+window.addEventListener("load", function () {
+
+    // Always start at the top
+    window.scrollTo(0, 0);
+
+    const preloader =
+        document.getElementById("preloader");
+
+    if (!preloader) return;
+
+    // Fade out
+    preloader.style.transition =
+        "opacity 0.6s ease";
+
+    preloader.style.opacity = "0";
+
+    // Remove after animation
+    setTimeout(function () {
+
+        preloader.style.display = "none";
+
+    }, 600);
+
+});
 
 
-    /*=========================================
-            MOBILE MENU
-    =========================================*/
+/*=========================================
+        MOBILE MENU
+=========================================*/
 
-    const menuToggle =
-        document.querySelector(".menu-toggle");
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    const navLinks =
-        document.querySelector(".nav-links");
+        const menuToggle =
+            document.querySelector(".menu-toggle");
+
+        const navLinks =
+            document.querySelector(".nav-links");
 
 
-    if (menuToggle && navLinks) {
+        if (!menuToggle || !navLinks) return;
 
-        menuToggle.addEventListener("click", function () {
 
-            menuToggle.classList.toggle("active");
+        /* OPEN / CLOSE MENU */
 
-            navLinks.classList.toggle("active");
+        menuToggle.addEventListener(
+            "click",
+            function () {
+
+                menuToggle.classList.toggle("active");
+
+                navLinks.classList.toggle("active");
+
+            }
+        );
+
+
+        /* CLOSE MENU WHEN LINK IS CLICKED */
+
+        const links =
+            navLinks.querySelectorAll("a");
+
+        links.forEach(function (link) {
+
+            link.addEventListener(
+                "click",
+                function () {
+
+                    menuToggle.classList.remove("active");
+
+                    navLinks.classList.remove("active");
+
+                }
+            );
 
         });
 
+    }
+);
 
-        navLinks.querySelectorAll("a").forEach(function (link) {
 
-            link.addEventListener("click", function () {
+/*=========================================
+        STICKY NAVBAR
+=========================================*/
 
-                menuToggle.classList.remove("active");
+window.addEventListener(
+    "scroll",
+    function () {
 
-                navLinks.classList.remove("active");
+        const navbar =
+            document.querySelector(".navbar");
+
+        if (!navbar) return;
+
+
+        if (window.scrollY > 50) {
+
+            navbar.classList.add("scrolled");
+
+        } else {
+
+            navbar.classList.remove("scrolled");
+
+        }
+
+    }
+);
+
+
+/*=========================================
+        ACTIVE NAVIGATION
+=========================================*/
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const sections =
+            document.querySelectorAll("section[id]");
+
+        const navLinks =
+            document.querySelectorAll(
+                ".nav-links a"
+            );
+
+
+        if (!sections.length || !navLinks.length) {
+            return;
+        }
+
+
+        function updateActiveNavigation() {
+
+            let currentSection = "";
+
+
+            sections.forEach(function (section) {
+
+                const sectionTop =
+                    section.offsetTop - 150;
+
+                const sectionHeight =
+                    section.offsetHeight;
+
+                if (
+                    window.scrollY >= sectionTop &&
+                    window.scrollY <
+                    sectionTop + sectionHeight
+                ) {
+
+                    currentSection =
+                        section.getAttribute("id");
+
+                }
 
             });
 
-        });
+
+            navLinks.forEach(function (link) {
+
+                link.classList.remove("active");
+
+
+                const href =
+                    link.getAttribute("href");
+
+
+                if (
+                    href === "#" + currentSection
+                ) {
+
+                    link.classList.add("active");
+
+                }
+
+            });
+
+        }
+
+
+        window.addEventListener(
+            "scroll",
+            updateActiveNavigation
+        );
+
+
+        updateActiveNavigation();
 
     }
+);
 
 
-    /*=========================================
-            SAFE SCROLL REVEAL
-    =========================================*/
+/*=========================================
+        SCROLL REVEAL
+=========================================*/
 
-    const revealElements =
-        document.querySelectorAll(".reveal");
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-
-    function revealOnScroll() {
-
-        revealElements.forEach(function (element) {
-
-            const elementTop =
-                element.getBoundingClientRect().top;
-
-            const windowHeight =
-                window.innerHeight;
+        const revealElements =
+            document.querySelectorAll(".reveal");
 
 
-            if (elementTop < windowHeight - 80) {
-
-                element.classList.remove(
-                    "reveal-hidden"
-                );
-
-                element.classList.add(
-                    "reveal-visible"
-                );
-
-            }
-
-        });
-
-    }
+        if (!revealElements.length) return;
 
 
-    /*
-        Only hide sections that are below
-        the visitor's current screen.
-    */
+        function revealOnScroll() {
 
-    revealElements.forEach(function (element) {
+            revealElements.forEach(
+                function (element) {
 
-        const elementTop =
-            element.getBoundingClientRect().top;
+                    const elementTop =
+                        element.getBoundingClientRect().top;
 
-        const windowHeight =
-            window.innerHeight;
+                    const windowHeight =
+                        window.innerHeight;
 
 
-        if (elementTop >= windowHeight - 80) {
+                    if (
+                        elementTop <
+                        windowHeight - 80
+                    ) {
 
-            element.classList.add(
-                "reveal-hidden"
+                        element.classList.add("active");
+
+                    }
+
+                }
             );
 
         }
 
-    });
+
+        // Run immediately
+        revealOnScroll();
 
 
-    revealOnScroll();
-
-
-    window.addEventListener(
-        "scroll",
-        revealOnScroll,
-        { passive: true }
-    );
-
-
-    /*=========================================
-            ACTIVE NAVIGATION
-    =========================================*/
-
-    const sections =
-        document.querySelectorAll("section[id]");
-
-    const navigationLinks =
-        document.querySelectorAll(".nav-links a");
-
-
-    function updateActiveNavigation() {
-
-        let currentSection = "";
-
-
-        sections.forEach(function (section) {
-
-            const sectionTop =
-                section.offsetTop - 150;
-
-            const sectionHeight =
-                section.offsetHeight;
-
-
-            if (
-                window.scrollY >= sectionTop &&
-                window.scrollY <
-                sectionTop + sectionHeight
-            ) {
-
-                currentSection =
-                    section.getAttribute("id");
-
-            }
-
-        });
-
-
-        navigationLinks.forEach(function (link) {
-
-            link.classList.remove("active");
-
-
-            const target =
-                link.getAttribute("href");
-
-
-            if (
-                target ===
-                "#" + currentSection
-            ) {
-
-                link.classList.add("active");
-
-            }
-
-        });
-
-    }
-
-
-    window.addEventListener(
-        "scroll",
-        updateActiveNavigation,
-        { passive: true }
-    );
-
-
-    updateActiveNavigation();
-
-
-    /*=========================================
-            SCROLL PROGRESS BAR
-    =========================================*/
-
-    const progressBar =
-        document.getElementById(
-            "progress-bar"
+        // Run while scrolling
+        window.addEventListener(
+            "scroll",
+            revealOnScroll
         );
 
+    }
+);
 
-    function updateProgressBar() {
+
+/*=========================================
+        SCROLL PROGRESS BAR
+=========================================*/
+
+window.addEventListener(
+    "scroll",
+    function () {
+
+        const progressBar =
+            document.getElementById(
+                "progress-bar"
+            );
+
 
         if (!progressBar) return;
 
@@ -242,52 +322,49 @@ document.addEventListener("DOMContentLoaded", function () {
         const scrollTop =
             window.scrollY;
 
+
         const documentHeight =
-            document.documentElement.scrollHeight -
+            document.documentElement
+                .scrollHeight -
             window.innerHeight;
 
 
         if (documentHeight <= 0) {
 
-            progressBar.style.width =
-                "0%";
+            progressBar.style.width = "0%";
 
             return;
 
         }
 
 
-        const scrollPercentage =
+        const progress =
             (scrollTop / documentHeight) * 100;
 
 
         progressBar.style.width =
-            scrollPercentage + "%";
+            progress + "%";
 
     }
+);
 
 
-    window.addEventListener(
-        "scroll",
-        updateProgressBar,
-        { passive: true }
-    );
+/*=========================================
+        BACK TO TOP BUTTON
+=========================================*/
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const topBtn =
+            document.getElementById("topBtn");
 
 
-    updateProgressBar();
+        if (!topBtn) return;
 
 
-    /*=========================================
-            BACK TO TOP BUTTON
-    =========================================*/
-
-    const topBtn =
-        document.getElementById(
-            "topBtn"
-        );
-
-
-    if (topBtn) {
+        /* SHOW / HIDE BUTTON */
 
         window.addEventListener(
             "scroll",
@@ -305,10 +382,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 }
 
-            },
-            { passive: true }
+            }
         );
 
+
+        /* SCROLL TO TOP */
 
         topBtn.addEventListener(
             "click",
@@ -326,349 +404,694 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
     }
+);
 
 
-    /*=========================================
-            REVIEW SYSTEM
-    =========================================*/
+/*=========================================
+        REVIEW SUBMISSION
+=========================================*/
 
-    const reviewForm =
-        document.getElementById(
-            "jidexReviewForm"
+async function submitReview(event) {
+
+    event.preventDefault();
+
+
+    if (!supabaseClient) {
+
+        alert(
+            "Review system is currently unavailable. Please try again later."
         );
 
-    const reviewsContainer =
+        return;
+
+    }
+
+
+    const nameInput =
         document.getElementById(
-            "reviewsDisplayContainer"
+            "reviewerName"
+        );
+
+    const ratingInput =
+        document.getElementById(
+            "reviewerRating"
+        );
+
+    const commentInput =
+        document.getElementById(
+            "reviewerComment"
         );
 
 
-    /*
-        LOAD REVIEWS
-    */
+    if (
+        !nameInput ||
+        !ratingInput ||
+        !commentInput
+    ) {
 
-    async function loadReviews() {
+        console.error(
+            "Review form elements were not found."
+        );
 
-        if (!supabaseClient) {
+        return;
 
-            if (reviewsContainer) {
+    }
 
-                reviewsContainer.innerHTML =
-                    '<p style="text-align:center;color:#777;">Unable to connect to reviews.</p>';
 
-            }
+    const name =
+        nameInput.value.trim();
+
+    const rating =
+        Number(ratingInput.value);
+
+    const comment =
+        commentInput.value.trim();
+
+
+    /* VALIDATION */
+
+    if (!name) {
+
+        alert("Please enter your name.");
+
+        return;
+
+    }
+
+
+    if (
+        !rating ||
+        rating < 1 ||
+        rating > 5
+    ) {
+
+        alert(
+            "Please select a rating between 1 and 5."
+        );
+
+        return;
+
+    }
+
+
+    if (!comment) {
+
+        alert("Please write your review.");
+
+        return;
+
+    }
+
+
+    /* FIND SUBMIT BUTTON */
+
+    const button =
+        event.target.querySelector(
+            'button[type="submit"]'
+        );
+
+
+    const originalButtonText =
+        button
+            ? button.innerText
+            : "Submit Review";
+
+
+    if (button) {
+
+        button.disabled = true;
+
+        button.innerText =
+            "Submitting...";
+
+    }
+
+
+    try {
+
+        /* INSERT REVIEW INTO SUPABASE */
+
+        const { data, error } =
+            await supabaseClient
+                .from("reviews")
+                .insert([
+                    {
+                        name: name,
+                        rating: rating,
+                        comment: comment
+                    }
+                ])
+                .select();
+
+
+        if (error) {
+
+            console.error(
+                "Supabase review error:",
+                error
+            );
+
+            alert(
+                "We could not submit your review. Please try again."
+            );
 
             return;
 
         }
 
 
-        if (!reviewsContainer) return;
+        console.log(
+            "Review submitted successfully:",
+            data
+        );
 
 
-        reviewsContainer.innerHTML =
-            '<p style="text-align:center;color:#777;">Loading reviews...</p>';
+        /* CLEAR FORM */
+
+        nameInput.value = "";
+
+        ratingInput.value = "5";
+
+        commentInput.value = "";
 
 
-        try {
+        alert(
+            "Thank you! Your review has been submitted successfully."
+        );
 
-            const {
-                data,
-                error
-            } = await supabaseClient
+
+        /* REFRESH REVIEWS */
+
+        await loadReviews();
+
+
+    } catch (error) {
+
+        console.error(
+            "Unexpected review error:",
+            error
+        );
+
+        alert(
+            "Something went wrong. Please try again."
+        );
+
+
+    } finally {
+
+        if (button) {
+
+            button.disabled = false;
+
+            button.innerText =
+                originalButtonText;
+
+        }
+
+    }
+
+}
+
+
+/*=========================================
+        LOAD REVIEWS FROM SUPABASE
+=========================================*/
+
+async function loadReviews() {
+
+    const container =
+        document.getElementById(
+            "reviewsDisplayContainer"
+        );
+
+
+    if (!container) {
+
+        console.warn(
+            "Reviews display container not found."
+        );
+
+        return;
+
+    }
+
+
+    if (!supabaseClient) {
+
+        container.innerHTML = `
+            <p style="
+                text-align:center;
+                color:#777;
+            ">
+                Review system unavailable.
+            </p>
+        `;
+
+        return;
+
+    }
+
+
+    /* LOADING MESSAGE */
+
+    container.innerHTML = `
+        <p style="
+            text-align:center;
+            color:#777;
+        ">
+            Loading reviews...
+        </p>
+    `;
+
+
+    try {
+
+        /*
+            IMPORTANT:
+
+            Your Supabase table uses:
+
+            id
+            name
+            rating
+            comment
+            create_at
+
+            Therefore we order by create_at.
+        */
+
+        const { data, error } =
+            await supabaseClient
                 .from("reviews")
-                .select("*")
+                .select(
+                    "id, name, rating, comment, create_at"
+                )
                 .order(
-                    "created_at",
+                    "create_at",
                     {
                         ascending: false
                     }
                 );
 
 
-            if (error) {
-
-                console.error(
-                    "Error loading reviews:",
-                    error
-                );
-
-                reviewsContainer.innerHTML =
-                    '<p style="text-align:center;color:#777;">No reviews available yet.</p>';
-
-                return;
-
-            }
-
-
-            if (!data || data.length === 0) {
-
-                reviewsContainer.innerHTML =
-                    '<p style="text-align:center;color:#777;">Be the first to leave a review!</p>';
-
-                return;
-
-            }
-
-
-            reviewsContainer.innerHTML = "";
-
-
-            data.forEach(function (review) {
-
-                const reviewCard =
-                    document.createElement("div");
-
-
-                reviewCard.style.background =
-                    "#fff";
-
-                reviewCard.style.padding =
-                    "20px";
-
-                reviewCard.style.borderRadius =
-                    "12px";
-
-                reviewCard.style.boxShadow =
-                    "0 8px 25px rgba(0,0,0,.08)";
-
-
-                const name =
-                    document.createElement("h4");
-
-                name.textContent =
-                    review.name ||
-                    review.reviewer_name ||
-                    "Customer";
-
-
-                name.style.marginBottom =
-                    "8px";
-
-
-                const rating =
-                    document.createElement("div");
-
-
-                const ratingValue =
-                    Number(
-                        review.rating ||
-                        review.reviewer_rating ||
-                        5
-                    );
-
-
-                rating.textContent =
-                    "⭐".repeat(
-                        Math.max(
-                            1,
-                            Math.min(
-                                5,
-                                ratingValue
-                            )
-                        )
-                    );
-
-
-                rating.style.marginBottom =
-                    "10px";
-
-
-                const comment =
-                    document.createElement("p");
-
-
-                comment.textContent =
-                    review.comment ||
-                    review.reviewer_comment ||
-                    "";
-
-
-                comment.style.color =
-                    "#777";
-
-                comment.style.lineHeight =
-                    "1.7";
-
-
-                reviewCard.appendChild(name);
-
-                reviewCard.appendChild(rating);
-
-                reviewCard.appendChild(comment);
-
-
-                reviewsContainer.appendChild(
-                    reviewCard
-                );
-
-            });
-
-        } catch (error) {
+        if (error) {
 
             console.error(
-                "Review loading error:",
+                "Error loading reviews:",
                 error
             );
 
 
-            reviewsContainer.innerHTML =
-                '<p style="text-align:center;color:#777;">Unable to load reviews.</p>';
+            container.innerHTML = `
+                <p style="
+                    text-align:center;
+                    color:#777;
+                ">
+                    Unable to load reviews right now.
+                </p>
+            `;
+
+            return;
 
         }
 
-    }
+
+        /* NO REVIEWS */
+
+        if (!data || data.length === 0) {
+
+            container.innerHTML = `
+                <p style="
+                    text-align:center;
+                    color:#777;
+                ">
+                    No reviews yet.
+                    Be the first to leave a review!
+                </p>
+            `;
+
+            return;
+
+        }
 
 
-    /*
-        SUBMIT REVIEW
-    */
+        /* CLEAR CONTAINER */
 
-    if (reviewForm) {
-
-        reviewForm.addEventListener(
-            "submit",
-            async function (event) {
-
-                event.preventDefault();
+        container.innerHTML = "";
 
 
-                if (!supabaseClient) {
+        /* DISPLAY EACH REVIEW */
 
-                    alert(
-                        "Review system is currently unavailable."
+        data.forEach(function (review) {
+
+
+            /* CREATE CARD */
+
+            const reviewCard =
+                document.createElement("div");
+
+
+            reviewCard.className =
+                "customer-review";
+
+
+            /* SAFE NAME */
+
+            const safeName =
+                escapeHTML(
+                    review.name || "Customer"
+                );
+
+
+            /* SAFE COMMENT */
+
+            const safeComment =
+                escapeHTML(
+                    review.comment || ""
+                );
+
+
+            /* RATING */
+
+            const rating =
+                Math.min(
+                    5,
+                    Math.max(
+                        1,
+                        Number(review.rating) || 0
+                    )
+                );
+
+
+            const stars =
+                "⭐".repeat(rating);
+
+
+            /* DATE */
+
+            let formattedDate = "";
+
+
+            if (review.create_at) {
+
+                const date =
+                    new Date(
+                        review.create_at
                     );
-
-                    return;
-
-                }
-
-
-                const nameInput =
-                    document.getElementById(
-                        "reviewerName"
-                    );
-
-                const ratingInput =
-                    document.getElementById(
-                        "reviewerRating"
-                    );
-
-                const commentInput =
-                    document.getElementById(
-                        "reviewerComment"
-                    );
-
-
-                const name =
-                    nameInput.value.trim();
-
-                const rating =
-                    Number(
-                        ratingInput.value
-                    );
-
-                const comment =
-                    commentInput.value.trim();
 
 
                 if (
-                    !name ||
-                    !comment ||
-                    !rating
+                    !isNaN(
+                        date.getTime()
+                    )
                 ) {
 
-                    alert(
-                        "Please complete all review fields."
-                    );
-
-                    return;
-
-                }
-
-
-                const submitButton =
-                    reviewForm.querySelector(
-                        'button[type="submit"]'
-                    );
-
-
-                if (submitButton) {
-
-                    submitButton.disabled =
-                        true;
-
-                    submitButton.textContent =
-                        "Submitting...";
-
-                }
-
-
-                try {
-
-                    const {
-                        error
-                    } = await supabaseClient
-                        .from("reviews")
-                        .insert([
+                    formattedDate =
+                        date.toLocaleDateString(
+                            "en-NG",
                             {
-                                name: name,
-                                rating: rating,
-                                comment: comment
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric"
                             }
-                        ]);
-
-
-                    if (error) {
-
-                        console.error(
-                            "Review submission error:",
-                            error
                         );
 
-                        alert(
-                            "Your review could not be submitted. Please try again."
-                        );
+                }
 
-                        return;
+            }
+
+
+            /* CARD HTML */
+
+            reviewCard.innerHTML = `
+
+                <div style="
+                    background:#fff;
+                    padding:25px;
+                    border-radius:15px;
+                    box-shadow:0 8px 25px rgba(0,0,0,.08);
+                    border-left:4px solid #D62828;
+                ">
+
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:flex-start;
+                        gap:15px;
+                        flex-wrap:wrap;
+                    ">
+
+                        <div>
+
+                            <h4 style="
+                                margin:0 0 6px;
+                                color:#1F1F1F;
+                                font-size:18px;
+                            ">
+                                ${safeName}
+                            </h4>
+
+                            <div style="
+                                font-size:17px;
+                                margin-bottom:8px;
+                            ">
+                                ${stars}
+                            </div>
+
+                        </div>
+
+                        ${
+                            formattedDate
+                            ? `
+                                <small style="
+                                    color:#999;
+                                ">
+                                    ${formattedDate}
+                                </small>
+                            `
+                            : ""
+                        }
+
+                    </div>
+
+                    <p style="
+                        margin:10px 0 0;
+                        color:#555;
+                        line-height:1.8;
+                    ">
+                        ${safeComment}
+                    </p>
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                reviewCard
+            );
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Unexpected error loading reviews:",
+            error
+        );
+
+
+        container.innerHTML = `
+            <p style="
+                text-align:center;
+                color:#777;
+            ">
+                Unable to load reviews.
+            </p>
+        `;
+
+    }
+
+}
+
+
+/*=========================================
+        ESCAPE HTML
+=========================================*/
+
+function escapeHTML(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value;
+
+    return div.innerHTML;
+
+}
+
+
+/*=========================================
+        REVIEW FORM INITIALIZATION
+=========================================*/
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const reviewForm =
+            document.getElementById(
+                "jidexReviewForm"
+            );
+
+
+        if (reviewForm) {
+
+            reviewForm.addEventListener(
+                "submit",
+                submitReview
+            );
+
+        }
+
+
+        /* LOAD EXISTING REVIEWS */
+
+        loadReviews();
+
+    }
+);
+
+
+/*=========================================
+        SMOOTH SCROLL
+=========================================*/
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const anchorLinks =
+            document.querySelectorAll(
+                'a[href^="#"]'
+            );
+
+
+        anchorLinks.forEach(
+            function (link) {
+
+                link.addEventListener(
+                    "click",
+                    function (event) {
+
+                        const targetId =
+                            this.getAttribute(
+                                "href"
+                            );
+
+
+                        if (
+                            !targetId ||
+                            targetId === "#"
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        const target =
+                            document.querySelector(
+                                targetId
+                            );
+
+
+                        if (!target) {
+
+                            return;
+
+                        }
+
+
+                        event.preventDefault();
+
+
+                        const header =
+                            document.querySelector(
+                                "header"
+                            );
+
+
+                        const headerHeight =
+                            header
+                                ? header.offsetHeight
+                                : 0;
+
+
+                        const targetPosition =
+                            target.getBoundingClientRect()
+                                .top +
+                            window.scrollY -
+                            headerHeight;
+
+
+                        window.scrollTo({
+
+                            top:
+                                targetPosition,
+
+                            behavior:
+                                "smooth"
+
+                        });
 
                     }
+                );
+
+            }
+        );
+
+    }
+);
 
 
-                    alert(
-                        "Thank you! Your review has been submitted."
+/*=========================================
+        PAGE VISIBILITY FIX
+=========================================*/
+
+/*
+    This makes sure sections do not remain
+    hidden if JavaScript loads late or if
+    the visitor opens the page at a section.
+*/
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const revealElements =
+            document.querySelectorAll(
+                ".reveal"
+            );
+
+
+        revealElements.forEach(
+            function (element) {
+
+                const rect =
+                    element.getBoundingClientRect();
+
+
+                if (
+                    rect.top <
+                    window.innerHeight
+                ) {
+
+                    element.classList.add(
+                        "active"
                     );
-
-
-                    reviewForm.reset();
-
-
-                    await loadReviews();
-
-
-                } catch (error) {
-
-                    console.error(
-                        "Review error:",
-                        error
-                    );
-
-
-                    alert(
-                        "Something went wrong while submitting your review."
-                    );
-
-                } finally {
-
-                    if (submitButton) {
-
-                        submitButton.disabled =
-                            false;
-
-                        submitButton.textContent =
-                            "Submit Review";
-
-                    }
 
                 }
 
@@ -676,97 +1099,119 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
     }
-
-
-    /*
-        Load reviews when page opens
-    */
-
-    loadReviews();
-
-});
-
-
-/*=========================================
-        STICKY NAVBAR
-=========================================*/
-
-window.addEventListener(
-    "scroll",
-    function () {
-
-        const navbar =
-            document.querySelector(
-                ".navbar"
-            );
-
-
-        if (!navbar) return;
-
-
-        if (window.scrollY > 50) {
-
-            navbar.classList.add(
-                "scrolled"
-            );
-
-        } else {
-
-            navbar.classList.remove(
-                "scrolled"
-            );
-
-        }
-
-    },
-    { passive: true }
 );
 
 
 /*=========================================
-        PRELOADER
+        HERO VIDEO SAFETY
 =========================================*/
 
-window.addEventListener(
-    "load",
+document.addEventListener(
+    "DOMContentLoaded",
     function () {
 
-        /*
-            Always start visitor at top.
-        */
-
-        window.scrollTo(
-            0,
-            0
-        );
-
-
-        const preloader =
-            document.getElementById(
-                "preloader"
+        const heroVideo =
+            document.querySelector(
+                ".hero-video"
             );
 
 
-        if (!preloader) return;
+        if (!heroVideo) return;
 
 
-        preloader.style.transition =
-            "opacity 0.6s ease";
+        heroVideo.muted = true;
+
+        heroVideo.playsInline = true;
 
 
-        preloader.style.opacity =
-            "0";
+        const playPromise =
+            heroVideo.play();
 
 
-        setTimeout(
-            function () {
+        if (
+            playPromise !== undefined
+        ) {
 
-                preloader.style.display =
-                    "none";
+            playPromise.catch(
+                function () {
 
-            },
-            600
+                    console.log(
+                        "Hero video autoplay was prevented."
+                    );
+
+                }
+            );
+
+        }
+
+    }
+);
+
+
+/*=========================================
+        FACTORY / ACTION VIDEOS
+=========================================*/
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const videos =
+            document.querySelectorAll(
+                ".factory-card video, .action-card video, .journey-video video"
+            );
+
+
+        videos.forEach(
+            function (video) {
+
+                video.muted = true;
+
+                video.playsInline = true;
+
+            }
         );
 
     }
+);
+
+
+/*=========================================
+        WHATSAPP BUTTON
+=========================================*/
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const whatsapp =
+            document.querySelector(
+                ".whatsapp"
+            );
+
+
+        if (!whatsapp) return;
+
+
+        whatsapp.addEventListener(
+            "click",
+            function () {
+
+                console.log(
+                    "Opening JIDEX WhatsApp..."
+                );
+
+            }
+        );
+
+    }
+);
+
+
+/*=========================================
+        PAGE STARTUP MESSAGE
+=========================================*/
+
+console.log(
+    "JIDEX Foods website JavaScript loaded successfully."
 );
