@@ -579,7 +579,46 @@ Contact Us
 
 
 
+<!-- THE SUBMISSION FORM -->
+<section id="review-section" style="padding: 40px 20px; max-width: 600px; margin: 0 auto; font-family: sans-serif;">
+  <h3 style="text-align: center; color: #333;">Leave a Review</h3>
+  <form id="jidexReviewForm" style="display: flex; flex-direction: column; gap: 15px;">
+    
+    <div>
+      <label style="display: block; margin-bottom: 5px; font-weight: bold;">Your Name:</label>
+      <input type="text" id="reviewerName" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+    </div>
 
+    <div>
+      <label style="display: block; margin-bottom: 5px; font-weight: bold;">Rating (1 to 5):</label>
+      <select id="reviewerRating" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+        <option value="4">⭐⭐⭐⭐ (4/5)</option>
+        <option value="3">⭐⭐⭐ (3/5)</option>
+        <option value="2">⭐⭐ (2/5)</option>
+        <option value="1">⭐ (1/5)</option>
+      </select>
+    </div>
+
+    <div>
+      <label style="display: block; margin-bottom: 5px; font-weight: bold;">Your Review:</label>
+      <textarea id="reviewerComment" required rows="4" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; resize: vertical;"></textarea>
+    </div>
+
+    <button type="submit" style="background: #e67e22; color: white; border: none; padding: 12px; font-size: 16px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+      Submit Review
+    </button>
+  </form>
+
+  <hr style="margin: 40px 0; border: 0; border-top: 1px solid #eee;">
+
+  <!-- THE DYNAMIC REVIEWS FEED -->
+  <h3 style="text-align: center; color: #333;">What Our Customers Say</h3>
+  <div id="reviewsDisplayContainer" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+    <p style="text-align: center; color: #777;">Loading reviews...</p>
+  </div>
+</section>Section>
+ 
 
 
 <!--=========================================
