@@ -1580,23 +1580,36 @@ header{
 }
 
 /*=========================================
-        SCROLL REVEAL ANIMATION
+        SAFE SCROLL REVEAL ANIMATION
 =========================================*/
 
 .reveal{
 
-    opacity:0;
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
 
-    transform:translateY(70px);
-
-    transition:all .9s ease;
+    transition:
+        opacity .9s ease,
+        transform .9s ease;
 
 }
 
-.reveal.active{
+/* JavaScript adds this class when the
+   section enters the screen */
+
+.reveal.reveal-hidden{
+
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(70px);
+
+}
+
+.reveal.reveal-visible{
 
     opacity:1;
-
+    visibility:visible;
     transform:translateY(0);
 
 }
@@ -1930,21 +1943,4 @@ header{
     }
 
 }
-
-/* TEMPORARY VISIBILITY TEST */
-
-.about,
-.founder,
-.journey,
-.products,
-.factory,
-.action,
-.gallery,
-.contact,
-.footer {
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: none !important;
-}
-
 
