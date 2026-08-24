@@ -1,9 +1,51 @@
-// Paste your project keys inside the single quotes below
+/*=========================================
+        PRELOADER
+=========================================*/
+
+window.addEventListener("load", function () {
+
+    window.scrollTo(0, 0);
+
+    const preloader = document.getElementById("preloader");
+
+    if (preloader) {
+
+        preloader.style.transition = "opacity 0.6s ease";
+        preloader.style.opacity = "0";
+
+        setTimeout(function () {
+
+            preloader.style.display = "none";
+
+        }, 600);
+
+    }
+
+});
+
+
+/*=========================================
+        SUPABASE CONNECTION
+=========================================*/
+
 const SUPABASE_URL = 'https://jrmabbeurnsmxshmcooh.supabase.co';
+
 const SUPABASE_KEY = 'sb_publishable_BWINBzBQFqnGcOT2ghVeqA_B46ZfIrL';
 
-// This initializes the database client engine connection
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabaseClient = null;
+
+if (typeof supabase !== "undefined") {
+
+    supabaseClient = supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+} else {
+
+    console.error("Supabase library failed to load.");
+
+}
 
 
 
